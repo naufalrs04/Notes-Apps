@@ -35,7 +35,6 @@ class NotesList extends HTMLElement {
 
     let filteredNotes = notesData;
 
-    // Ambil attribute filter
     const filter = this.getAttribute("filter");
   
     if (filter === "archived") {
