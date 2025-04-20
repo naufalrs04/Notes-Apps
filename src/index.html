@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,17 +10,17 @@
     document.addEventListener("DOMContentLoaded", () => {
       const filterButtons = document.querySelectorAll(".filter-buttons button");
       const notesList = document.querySelector("notes-list");
-  
+
       filterButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           const filterValue = btn.getAttribute("data-filter");
-  
+
           if (filterValue) {
             notesList.setAttribute("filter", filterValue);
           } else {
             notesList.removeAttribute("filter");
           }
-  
+
           notesList.render();
 
           filterButtons.forEach((b) => b.classList.remove("active"));
@@ -29,7 +29,7 @@
       });
     });
   </script>
-  
+
   <body>
     <notes-header></notes-header>
 
@@ -39,7 +39,6 @@
       </div>
       <div>
         <div class="filter-buttons">
-          <button data-filter="">Semua</button>
           <button data-filter="active">Aktif</button>
           <button data-filter="archived">Diarsipkan</button>
         </div>

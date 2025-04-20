@@ -1,15 +1,15 @@
 class NotesFooter extends HTMLElement {
-    constructor() {
-      super();
-      this.attachShadow({ mode: "open" });
-    }
-  
-    connectedCallback() {
-      this.render();
-    }
-  
-    render() {
-      this.shadowRoot.innerHTML = `
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  render() {
+    this.shadowRoot.innerHTML = `
         <style>
           footer {
             text-align: center;
@@ -32,8 +32,7 @@ class NotesFooter extends HTMLElement {
           &copy; ${new Date().getFullYear()} Notes App | Made with ❤️ by Naufal Rizki
         </footer>
       `;
-    }
   }
-  
-  customElements.define("notes-footer", NotesFooter);
-  
+}
+
+customElements.define("notes-footer", NotesFooter);

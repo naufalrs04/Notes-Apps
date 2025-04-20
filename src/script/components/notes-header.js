@@ -1,15 +1,15 @@
 class NotesHeader extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
 
-    connectedCallback() {
-        this.render();
-    }
+  connectedCallback() {
+    this.render();
+  }
 
-    render() {
-        this.shadowRoot.innerHTML = `
+  render() {
+    this.shadowRoot.innerHTML = `
             <style>
                 header {
                     background-color: #006A71;
@@ -28,9 +28,7 @@ class NotesHeader extends HTMLElement {
                 <h1>Notes App</h1>
             </header>
         `;
-    }
-
+  }
 }
 
-customElements.define('notes-header', NotesHeader);
-export default NotesHeader;
+customElements.define("notes-header", NotesHeader);
