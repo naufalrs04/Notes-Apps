@@ -1,4 +1,14 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Notes App</title><link rel="stylesheet" href="/src/style/style.css"/><script defer="defer" src="bundle.js"></script></head><script>document.addEventListener("DOMContentLoaded", () => {
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Notes App</title>
+    <link rel="stylesheet" href="/src/style/style.css" />
+    <script defer="defer" src="bundle.js"></script>
+  </head>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
       const filterButtons = document.querySelectorAll(".filter-buttons button");
       const notesList = document.querySelector("notes-list");
 
@@ -18,4 +28,25 @@
           btn.classList.add("active");
         });
       });
-    });</script><body><notes-header></notes-header><main><div><notes-input></notes-input></div><div><div class="filter-buttons"><button data-filter="active">Aktif</button> <button data-filter="archived">Diarsipkan</button></div><notes-list></notes-list></div></main><notes-footer></notes-footer><script type="module" src="/src/script/components/notes-header.js"></script><script type="module" src="/src/script/components/notes-input.js"></script><script type="module" src="/src/script/components/notes-list.js"></script><script type="module" src="/src/script/components/notes-footer.js"></script><script type="module" src="/src/script/data/data.js"></script></body></html>
+    });
+  </script>
+  <body>
+    <notes-header></notes-header>
+    <main>
+      <div><notes-input></notes-input></div>
+      <div>
+        <div class="filter-buttons">
+          <button data-filter="active">Aktif</button>
+          <button data-filter="archived">Diarsipkan</button>
+        </div>
+        <notes-list></notes-list>
+      </div>
+    </main>
+    <notes-footer></notes-footer>
+    <script type="module" src="/src/script/components/notes-header.js"></script>
+    <script type="module" src="/src/script/components/notes-input.js"></script>
+    <script type="module" src="/src/script/components/notes-list.js"></script>
+    <script type="module" src="/src/script/components/notes-footer.js"></script>
+    <script type="module" src="/src/script/data/data.js"></script>
+  </body>
+</html>

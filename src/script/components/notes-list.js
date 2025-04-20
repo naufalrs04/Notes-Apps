@@ -34,6 +34,7 @@ class NotesList extends HTMLElement {
   }
 
   async fetchNotes() {
+    this.renderLoadingIndicator(true);
     try {
       const response = await fetch("https://notes-api.dicoding.dev/v2/notes");
       const result = await response.json();
@@ -45,6 +46,8 @@ class NotesList extends HTMLElement {
     } catch {
       this.notes = [];
       this.showResponseMessage("Terjadi kesalahan saat memuat catatan.");
+    } finally {
+      this.renderLoadingIndicator(false);
     }
   }
 

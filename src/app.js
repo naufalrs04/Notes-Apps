@@ -1,2 +1,2 @@
-import "./script/components/index";
+import "./script/components/index.js";
 import "./style/style.css";
