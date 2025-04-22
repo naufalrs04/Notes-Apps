@@ -8,24 +8,24 @@
     <script defer="defer" src="bundle.js"></script>
   </head>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const filterButtons = document.querySelectorAll(".filter-buttons button");
-      const notesList = document.querySelector("notes-list");
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterButtons = document.querySelectorAll('.filter-buttons button');
+      const notesList = document.querySelector('notes-list');
 
-      filterButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const filterValue = btn.getAttribute("data-filter");
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const filterValue = btn.getAttribute('data-filter');
 
           if (filterValue) {
-            notesList.setAttribute("filter", filterValue);
+            notesList.setAttribute('filter', filterValue);
           } else {
-            notesList.removeAttribute("filter");
+            notesList.removeAttribute('filter');
           }
 
           notesList.render();
 
-          filterButtons.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
+          filterButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
         });
       });
     });
@@ -42,7 +42,7 @@
         <notes-list></notes-list>
       </div>
     </main>
-    <notes-footer></notes-footer>
+    <notes-footer></notes-footer><loading-indicator></loading-indicator>
     <script type="module" src="/src/script/components/notes-header.js"></script>
     <script type="module" src="/src/script/components/notes-input.js"></script>
     <script type="module" src="/src/script/components/notes-list.js"></script>

@@ -1,9 +1,9 @@
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 
 class NotesInput extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
   }
 
   connectedCallback() {
@@ -14,7 +14,6 @@ class NotesInput extends HTMLElement {
   render() {
     this.shadowRoot.innerHTML = `
       <style>
-        /* Styling yang sudah ada */
         form {
             display: flex;
             flex-direction: column;
@@ -80,25 +79,6 @@ class NotesInput extends HTMLElement {
         button:hover {
             background-color: rgb(5, 140, 149);
         }
-
-        .loading-indicator {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #f1c40f;
-            border-radius: 50%;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
       </style>
 
       <form id="note-form">
@@ -116,48 +96,46 @@ class NotesInput extends HTMLElement {
 
           <button type="submit">Tambah Catatan</button>
       </form>
-
-      <div class="loading-indicator" id="loading-indicator"></div>
     `;
   }
 
   setupEventListeners() {
-    const form = this.shadowRoot.querySelector("#note-form");
-    const titleInput = this.shadowRoot.querySelector("#title");
-    const bodyInput = this.shadowRoot.querySelector("#body");
-    const titleError = this.shadowRoot.querySelector("#title-error");
-    const bodyError = this.shadowRoot.querySelector("#body-error");
-    const loadingIndicator =
-      this.shadowRoot.querySelector("#loading-indicator");
+    const form = this.shadowRoot.querySelector('#note-form');
+    const titleInput = this.shadowRoot.querySelector('#title');
+    const bodyInput = this.shadowRoot.querySelector('#body');
+    const titleError = this.shadowRoot.querySelector('#title-error');
+    const bodyError = this.shadowRoot.querySelector('#body-error');
+
+    const loader = document.querySelector('loading-indicator');
 
     function validateTitle() {
       if (titleInput.value.trim().length < 3) {
-        titleError.textContent = "Judul harus minimal 3 karakter.";
-        titleInput.classList.add("invalid");
+        titleError.textContent = 'Judul harus minimal 3 karakter.';
+        titleInput.classList.add('invalid');
         return false;
       } else {
-        titleError.textContent = "";
-        titleInput.classList.remove("invalid");
+        titleError.textContent = '';
+        titleInput.classList.remove('invalid');
         return true;
       }
     }
 
     function validateBody() {
       if (bodyInput.value.trim().length < 5) {
-        bodyError.textContent = "Isi catatan harus minimal 5 karakter.";
-        bodyInput.classList.add("invalid");
+        bodyError.textContent = 'Isi catatan harus minimal 5 karakter.';
+        bodyInput.classList.add('invalid');
         return false;
       } else {
-        bodyError.textContent = "";
-        bodyInput.classList.remove("invalid");
+        bodyError.textContent = '';
+        bodyInput.classList.remove('invalid');
         return true;
       }
     }
 
-    titleInput.addEventListener("input", validateTitle);
-    bodyInput.addEventListener("input", validateBody);
+    titleInput.addEventListener('input', validateTitle);
+    bodyInput.addEventListener('input', validateBody);
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
       const isTitleValid = validateTitle();
       const isBodyValid = validateBody();
@@ -168,58 +146,53 @@ class NotesInput extends HTMLElement {
           body: bodyInput.value.trim(),
         };
 
-        loadingIndicator.style.display = "block";
+        loader?.show();
 
         try {
-          const response = await fetch(
-            `https://notes-api.dicoding.dev/v2/notes`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(newNote),
+          const response = await fetch(`https://notes-api.dicoding.dev/v2/notes`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-          );
+            body: JSON.stringify(newNote),
+          });
+
           const responseJson = await response.json();
 
-          if (response.ok && responseJson.status === "success") {
-            window.dispatchEvent(
-              new CustomEvent("note-added", { detail: responseJson.data }),
-            );
+          if (response.ok && responseJson.status === 'success') {
+            window.dispatchEvent(new CustomEvent('note-added', { detail: responseJson.data }));
             form.reset();
 
             Swal.fire({
-              title: "Sukses!",
-              text: "Catatan berhasil ditambahkan.",
-              icon: "success",
-              confirmButtonText: "OK",
+              title: 'Sukses!',
+              text: 'Catatan berhasil ditambahkan.',
+              icon: 'success',
+              confirmButtonText: 'OK',
             });
           } else {
             Swal.fire({
-              title: "Gagal!",
-              text: "Gagal menambahkan catatan: " + responseJson.message,
-              icon: "error",
-              confirmButtonText: "OK",
+              title: 'Gagal!',
+              text: 'Gagal menambahkan catatan: ' + responseJson.message,
+              icon: 'error',
+              confirmButtonText: 'OK',
             });
           }
         } catch (error) {
-          console.error("Error:", error);
+          console.error('Error:', error);
 
           Swal.fire({
-            title: "Terjadi Kesalahan!",
-            text: "Terjadi kesalahan saat mengirim data catatan.",
-            icon: "error",
-            confirmButtonText: "OK",
+            title: 'Terjadi Kesalahan!',
+            text: 'Terjadi kesalahan saat mengirim data catatan.',
+            icon: 'error',
+            confirmButtonText: 'OK',
           });
         } finally {
-          setTimeout(() => {
-            loadingIndicator.style.display = "none";
-          }, 1000);
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          loader?.hide();
         }
       }
     });
   }
 }
 
-customElements.define("notes-input", NotesInput);
+customElements.define('notes-input', NotesInput);

@@ -1,7 +1,7 @@
 class NotesFooter extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
   }
 
   connectedCallback() {
@@ -19,6 +19,7 @@ class NotesFooter extends HTMLElement {
             font-size: 0.9rem;
             font-family: sans-serif;
             margin-top: 2rem;
+            bottom: 0;
           }
   
           @media (max-width: 600px) {
@@ -35,4 +36,4 @@ class NotesFooter extends HTMLElement {
   }
 }
 
-customElements.define("notes-footer", NotesFooter);
+customElements.define('notes-footer', NotesFooter);

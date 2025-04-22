@@ -1,7 +1,7 @@
 class NotesHeader extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
   }
 
   connectedCallback() {
@@ -31,4 +31,4 @@ class NotesHeader extends HTMLElement {
   }
 }
 
-customElements.define("notes-header", NotesHeader);
+customElements.define('notes-header', NotesHeader);

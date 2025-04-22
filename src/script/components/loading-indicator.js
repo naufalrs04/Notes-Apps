@@ -1,47 +1,75 @@
 class LoadingIndicator extends HTMLElement {
   constructor() {
     super();
-    const shadow = this.attachShadow({ mode: "open" });
-
-    const loaderTemplate = document.createElement("template");
-    loaderTemplate.innerHTML = `
-        <style>
-          :host {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            text-align: center;
-          }
-  
-          .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #f1c40f;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 2s linear infinite;
-          }
-  
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        </style>
-        <div class="loader"></div>
-      `;
-    shadow.appendChild(loaderTemplate.content);
+    this.attachShadow({ mode: 'open' });
   }
 
   connectedCallback() {
-    this.style.display = "block";
+    this.render();
   }
 
-  disconnectedCallback() {
-    this.style.display = "none";
+  show() {
+    this.classList.add('show');
+  }
+
+  hide() {
+    this.classList.remove('show');
+  }
+
+  render() {
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: flex;
+          opacity: 0;
+          pointer-events: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.4);
+          z-index: 9999;
+          justify-content: center;
+          align-items: center;
+          transition: opacity 0.3s ease;
+        }
+
+        :host(.show) {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .loader {
+          width: 60px;
+          height: 60px;
+          border: 6px solid #e0e0e0;
+          border-top: 6px solid #1abc9c;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+          margin-top: 90px;
+          position: absolute;
+          color: white;
+          font-size: 1rem;
+          font-weight: bold;
+          font-family: sans-serif;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+
+      <div class="loader"></div>
+      <div class="loader-text">Memuat...</div>
+    `;
   }
 }
 
-customElements.define("loading-indicator", LoadingIndicator);
+if (!customElements.get('loading-indicator')) {
+  customElements.define('loading-indicator', LoadingIndicator);
+}

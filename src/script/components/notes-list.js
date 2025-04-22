@@ -1,75 +1,69 @@
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 
 class NotesList extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
     this.notes = [];
   }
 
   connectedCallback() {
     this.loadNotesByFilter();
-    window.addEventListener("note-added", () => this.loadNotesByFilter());
+    window.addEventListener('note-added', () => this.loadNotesByFilter());
 
     const observer = new MutationObserver(() => this.loadNotesByFilter());
-    observer.observe(this, { attributes: true, attributeFilter: ["filter"] });
+    observer.observe(this, { attributes: true, attributeFilter: ['filter'] });
   }
 
   async loadNotesByFilter() {
-    const filter = this.getAttribute("filter");
+    const filter = this.getAttribute('filter');
 
-    this.renderLoadingIndicator(true);
+    this.showLoader(true);
 
-    if (filter === "archived") {
+    if (filter === 'archived') {
       await this.fetchNotesArchived();
     } else {
       await this.fetchNotes();
     }
 
-    this.render();
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    setTimeout(() => {
-      this.renderLoadingIndicator(false);
-    }, 1000);
+    this.render();
+    this.showLoader(false);
   }
 
   async fetchNotes() {
-    this.renderLoadingIndicator(true);
     try {
-      const response = await fetch("https://notes-api.dicoding.dev/v2/notes");
+      const response = await fetch('https://notes-api.dicoding.dev/v2/notes');
       const result = await response.json();
-      if (result.status === "success") {
+      if (result.status === 'success') {
         this.notes = result.data;
       } else {
         this.notes = [];
       }
     } catch {
       this.notes = [];
-      this.showResponseMessage("Terjadi kesalahan saat memuat catatan.");
-    } finally {
-      this.renderLoadingIndicator(false);
+      this.showResponseMessage('Terjadi kesalahan saat memuat catatan.');
     }
   }
 
   async fetchNotesArchived() {
     try {
-      const response = await fetch(
-        "https://notes-api.dicoding.dev/v2/notes/archived",
-      );
+      const response = await fetch('https://notes-api.dicoding.dev/v2/notes/archived');
       const result = await response.json();
-      if (result.status === "success") {
+      if (result.status === 'success') {
         this.notes = result.data;
       } else {
         this.notes = [];
       }
     } catch {
       this.notes = [];
-      this.showResponseMessage("Terjadi kesalahan saat memuat catatan arsip.");
+      this.showResponseMessage('Terjadi kesalahan saat memuat catatan arsip.');
     }
   }
 
   async toggleArchive(id) {
-    const note = this.notes.find((n) => n.id === id);
+    const note = this.notes.find(n => n.id === id);
     if (!note) return;
 
     const endpoint = note.archived
@@ -77,87 +71,78 @@ class NotesList extends HTMLElement {
       : `https://notes-api.dicoding.dev/v2/notes/${id}/archive`;
 
     try {
-      const response = await fetch(endpoint, { method: "POST" });
+      this.showLoader(true);
+      const response = await fetch(endpoint, { method: 'POST' });
       const result = await response.json();
-      if (result.status === "success") {
+      if (result.status === 'success') {
         this.loadNotesByFilter();
       } else {
-        this.showResponseMessage(
-          "Terjadi kesalahan saat mengubah status arsip.",
-        );
+        this.showResponseMessage('Terjadi kesalahan saat mengubah status arsip.');
       }
     } catch {
-      this.showResponseMessage("Terjadi kesalahan saat mengubah status arsip.");
+      this.showResponseMessage('Terjadi kesalahan saat mengubah status arsip.');
+    } finally {
+      this.showLoader(false);
     }
   }
 
   async deleteNote(id) {
     const result = await Swal.fire({
-      title: "Apakah Anda yakin?",
-      text: "Catatan ini akan dihapus secara permanen.",
-      icon: "warning",
+      title: 'Apakah Anda yakin?',
+      text: 'Catatan ini akan dihapus secara permanen.',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: "Hapus",
-      cancelButtonText: "Batal",
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal',
       reverseButtons: true,
     });
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(
-          `https://notes-api.dicoding.dev/v2/notes/${id}`,
-          {
-            method: "DELETE",
-          },
-        );
+        this.showLoader(true);
+        const response = await fetch(`https://notes-api.dicoding.dev/v2/notes/${id}`, {
+          method: 'DELETE',
+        });
         const result = await response.json();
-        if (result.status === "success") {
+        if (result.status === 'success') {
           this.loadNotesByFilter();
-          Swal.fire("Dihapus!", "Catatan telah dihapus.", "success");
+          Swal.fire('Dihapus!', 'Catatan telah dihapus.', 'success');
         } else {
-          this.showResponseMessage("Terjadi kesalahan saat menghapus catatan.");
+          this.showResponseMessage('Terjadi kesalahan saat menghapus catatan.');
         }
       } catch {
-        this.showResponseMessage("Terjadi kesalahan saat menghapus catatan.");
+        this.showResponseMessage('Terjadi kesalahan saat menghapus catatan.');
+      } finally {
+        this.showLoader(false);
       }
     } else {
-      Swal.fire("Dibatalkan", "Penghapusan catatan dibatalkan.", "info");
+      Swal.fire('Dibatalkan', 'Penghapusan catatan dibatalkan.', 'info');
     }
   }
 
-  showResponseMessage(message = "Periksa koneksi internet Anda.") {
+  showResponseMessage(message = 'Periksa koneksi internet Anda.') {
     Swal.fire({
-      icon: "error",
-      title: "Oops...",
+      icon: 'error',
+      title: 'Oops...',
       text: message,
     });
   }
 
-  renderLoadingIndicator(isLoading) {
-    const loadingIndicator =
-      this.shadowRoot.querySelector(".loading-indicator");
-
-    if (isLoading) {
-      if (!loadingIndicator) {
-        const indicator = document.createElement("div");
-        indicator.classList.add("loading-indicator");
-        this.shadowRoot.appendChild(indicator);
-      }
-    } else {
-      if (loadingIndicator) {
-        loadingIndicator.remove();
-      }
+  showLoader(show) {
+    const loader = document.querySelector('loading-indicator');
+    if (loader) {
+      show ? loader.show() : loader.hide();
     }
   }
 
   render() {
-    const filter = this.getAttribute("filter");
+    const filter = this.getAttribute('filter');
     let filteredNotes = this.notes;
 
-    if (filter === "active") {
-      filteredNotes = this.notes.filter((note) => !note.archived);
-    } else if (filter === "archived") {
-      filteredNotes = this.notes.filter((note) => note.archived);
+    if (filter === 'active') {
+      filteredNotes = this.notes.filter(note => !note.archived);
+    } else if (filter === 'archived') {
+      filteredNotes = this.notes.filter(note => note.archived);
     }
 
     if (!filteredNotes.length) {
@@ -184,7 +169,6 @@ class NotesList extends HTMLElement {
           opacity: 0;
           transform: translateY(20px);
           animation: fadeInUp 0.5s forwards;
-          transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
         }
 
         @keyframes fadeInUp {
@@ -260,49 +244,29 @@ class NotesList extends HTMLElement {
         .delete-button:hover {
           background-color: #e74c3c;
         }
-
-        .loading-indicator {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 40px;
-          height: 40px;
-          border: 5px solid #f3f3f3;
-          border-top: 5px solid #f1c40f;
-          border-radius: 50%;
-          animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
       </style>
     `;
 
     const noteItems = filteredNotes
       .map(
-        (note) => `        
+        note => `
         <div class="note-item">
           <div class="note-title">${note.title}</div>
           <div class="note-body">${note.body}</div>
-          <span class="note-date">${new Date(
-            note.createdAt,
-          ).toLocaleDateString()}</span>
-          <span class="note-status ${note.archived ? "archived" : ""}">
-            ${note.archived ? "Diarsipkan" : "Aktif"}
+          <span class="note-date">${new Date(note.createdAt).toLocaleDateString()}</span>
+          <span class="note-status ${note.archived ? 'archived' : ''}">
+            ${note.archived ? 'Diarsipkan' : 'Aktif'}
           </span>
           <div class="button-group">
             <button class="edit-button" data-id="${note.id}">
-              ${note.archived ? "Keluarkan dari Arsip" : "Arsipkan"}
+              ${note.archived ? 'Keluarkan dari Arsip' : 'Arsipkan'}
             </button>
             <button class="delete-button" data-id="${note.id}">Hapus</button>
           </div>
         </div>
-      `,
+      `
       )
-      .join("");
+      .join('');
 
     this.shadowRoot.innerHTML = `
       ${styles}
@@ -311,20 +275,20 @@ class NotesList extends HTMLElement {
       </div>
     `;
 
-    this.shadowRoot.querySelectorAll(".edit-button").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const id = e.target.getAttribute("data-id");
+    this.shadowRoot.querySelectorAll('.edit-button').forEach(button => {
+      button.addEventListener('click', e => {
+        const id = e.target.getAttribute('data-id');
         this.toggleArchive(id);
       });
     });
 
-    this.shadowRoot.querySelectorAll(".delete-button").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const id = e.target.getAttribute("data-id");
+    this.shadowRoot.querySelectorAll('.delete-button').forEach(button => {
+      button.addEventListener('click', e => {
+        const id = e.target.getAttribute('data-id');
         this.deleteNote(id);
       });
     });
   }
 }
 
-customElements.define("notes-list", NotesList);
+customElements.define('notes-list', NotesList);
